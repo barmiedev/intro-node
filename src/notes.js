@@ -1,6 +1,10 @@
 import { insertDB, getDB, saveDB } from "./db.js";
 
 export const newNote = async (note, tags) => {
+  if (!note) {
+    throw new Error("Note content cannot be empty");
+  }
+
   const newNote = {
     tags,
     id: Date.now(),
@@ -18,6 +22,16 @@ export const getAllNotes = async () => {
 
 export const findNotes = async (filter) => {
   const { notes } = await getDB();
+
+  // find notes by tag if hash is in content
+  if (filter.startsWith("#")) {
+    const tag = filter.slice(1);
+    return notes.filter(
+      (note) => note.tags.includes(tag) || note.content.includes(tag)
+    );
+  }
+
+  // find nodes matching content filter
   return notes.filter((note) => {
     return note.content.toLowerCase().includes(filter.toLowerCase());
   });
