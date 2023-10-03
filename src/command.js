@@ -4,6 +4,7 @@ import {
   newNote,
   getAllNotes,
   findNotes,
+  findNotesByTag,
   removeAllNotes,
   removeNote,
 } from "./notes.js";
@@ -59,6 +60,20 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       const notes = await findNotes(argv.filter);
+      console.log(notes);
+    }
+  )
+  .command(
+    "find-tag <tag>",
+    "get notes by tag",
+    (yargs) => {
+      return yargs.positional("tag", {
+        describe: "The tag to filter notes by",
+        type: "string",
+      });
+    },
+    async (argv) => {
+      const notes = await findNotesByTag(argv.tag);
       console.log(notes);
     }
   )

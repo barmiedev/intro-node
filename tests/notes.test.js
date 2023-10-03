@@ -7,8 +7,14 @@ jest.unstable_mockModule("../src/db.js", () => ({
 }));
 
 const { insertDB, getDB, saveDB } = await import("../src/db.js");
-const { newNote, getAllNotes, findNotes, removeNote, removeAllNotes } =
-  await import("../src/notes.js");
+const {
+  newNote,
+  getAllNotes,
+  findNotes,
+  findNotesByTag,
+  removeNote,
+  removeAllNotes,
+} = await import("../src/notes.js");
 
 beforeEach(() => {
   insertDB.mockClear();
@@ -250,5 +256,49 @@ describe("CLI app", () => {
       const result = await findNotes("#2");
       expect(result).toEqual([data.notes[1]]);
     });
+  });
+
+  describe("find-tag", () => {
+    test("returns notes that match tag", async () => {
+      const data = {
+        notes: [
+          {
+            tags: ["tag1", "tag2"],
+            content: "test note #1",
+            id: Date.now(),
+          },
+          {
+            tags: ["tag3", "tag4"],
+            content: "test note #2",
+            id: Date.now(),
+          },
+        ],
+      };
+      getDB.mockResolvedValue(data);
+
+      const result = await findNotesByTag("tag1");
+      expect(result).toEqual([data.notes[0]]);
+    });
+  });
+
+  test("returns empty array if no notes match tag", async () => {
+    const data = {
+      notes: [
+        {
+          tags: ["tag1", "tag2"],
+          content: "test note #1",
+          id: Date.now(),
+        },
+        {
+          tags: ["tag3", "tag4"],
+          content: "test note #2",
+          id: Date.now(),
+        },
+      ],
+    };
+    getDB.mockResolvedValue(data);
+
+    const result = await findNotesByTag("foo");
+    expect(result).toEqual([]);
   });
 });

@@ -23,7 +23,7 @@ export const getAllNotes = async () => {
 export const findNotes = async (filter) => {
   const { notes } = await getDB();
 
-  // find notes by tag if hash is in content
+  // find notes by tag
   if (filter.startsWith("#")) {
     const tag = filter.slice(1);
     return notes.filter(
@@ -35,6 +35,11 @@ export const findNotes = async (filter) => {
   return notes.filter((note) => {
     return note.content.toLowerCase().includes(filter.toLowerCase());
   });
+};
+
+export const findNotesByTag = async (tag) => {
+  const { notes } = await getDB();
+  return notes.filter((note) => note.tags.includes(tag));
 };
 
 export const removeNote = async (id) => {
